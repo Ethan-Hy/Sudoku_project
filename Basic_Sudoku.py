@@ -12,6 +12,19 @@ board = [
     [0,4,9,2,0,6,0,0,7]
 ]
 
+
+# board = [
+#     [5,1,6,8,4,9,7,3,2],
+#     [3,0,7,6,0,5,0,0,0],
+#     [8,0,9,7,0,0,0,6,5],
+#     [1,3,5,0,6,0,9,0,7],
+#     [4,7,2,5,9,1,0,0,6],
+#     [9,6,8,3,7,0,0,5,0],
+#     [2,5,3,1,8,6,0,7,4],
+#     [6,8,4,2,0,7,5,0,0],
+#     [7,9,1,0,5,0,6,0,8]
+# ]
+
 def print_board(board):
     # i is row
     for i in range(len(board)):
@@ -63,11 +76,32 @@ def valid(board, position, number):
 
 # solve the Sudoku
 # use backtracking algorithm
+def solve(board):
 
+    find = find_next(board)
+    # base case where board is full
+    if not find:
+        return True
+    else:
+        x, y = find
+        # try out each possibility
+        for i in range(1, len(board) + 1):
+            if valid(board, (x, y), i):
+                board[x][y] = i
+                if solve(board):
+                    return True
+                # backtrack if cannot solve - recursion
+                board[x][y] = 0
+
+    return False
 
 
 
 print_board(board)
-
-# print(valid(board, find_next(board), 3))
+if not solve(board):
+    print("Not solvable!")
+else:
+    print("-----------------------------------")
+    print_board(board)
+    # print(valid(board, find_next(board), 3))
 
