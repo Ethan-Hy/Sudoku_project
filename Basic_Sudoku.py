@@ -92,8 +92,9 @@ def solve(board):
                     return True
                 # backtrack if cannot solve - recursion
                 board[x][y] = 0
+        return False
 
-    return False
+
 
 
 
