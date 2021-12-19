@@ -1,5 +1,5 @@
 import pygame
-from solver import valid, solve
+from solver import valid, solve, find_next
 import time
 pygame.init()
 
@@ -27,10 +27,6 @@ class Button:
                 return True
         else:
             return False
-
-
-
-
 
 
 # load button image and create instance
@@ -181,6 +177,35 @@ class Grid:
         return True
 
 
+# solve the sudoku automatically
+def auto_solve(boa, win, board, play_time, strikes):
+    find = find_next(boa.model)
+
+    if not find:
+        return True
+    else:
+        boa.select(find[0], find[1])
+        x, y = find
+        for i in range(1, len(boa.model) + 1):
+
+            if valid(boa.model, (x, y), i):
+                boa.boxes[x][y].set(i)
+                boa.update_model()
+                redraw_window(win, board, play_time, strikes)
+                pygame.display.update()
+                pygame.time.wait(10)
+                if auto_solve(boa, win, board, play_time, strikes):
+                    return True
+                # if it cannot solve backtrack - recursion
+                boa.select(x, y)
+                redraw_window(win, board, play_time, strikes)
+                pygame.display.update()
+                boa.boxes[x][y].set(0)
+                boa.update_model()
+                redraw_window(win, board, play_time, strikes)
+                pygame.display.update()
+                pygame.time.wait(10)
+        return False
 
 
 def redraw_window(win, board, time, strikes):
@@ -222,11 +247,6 @@ def format_time(secs):
     return mat
 
 
-
-
-
-
-
 def main():
     win = pygame.display.set_mode((WIDTH, HEIGHT))
     pygame.display.set_caption("Sudoku - Ethan Hy")
@@ -235,8 +255,7 @@ def main():
     start = time.time()
     strikes = 0
     key = None
-
-
+    finished = False
 
     while run:
         play_time = round(time.time() - start)
@@ -250,7 +269,11 @@ def main():
                     board.select(board.click(pos)[1], board.click(pos)[0])
                     key = None
                 if button.click(pos):
+                    board.update_model()
                     print("yay")
+                    auto_solve(board, win, board, play_time, strikes)
+                    finished = True
+                    finish_time = play_time
 
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_0:
@@ -287,13 +310,19 @@ def main():
                         key = None
                         if board.completed():
                             print("Sudoku completed!")
-                            run = False
+                            finished = True
+                            finish_time = play_time
 
         if board.selected and key != None:
             board.note(key)
 
-        redraw_window(win, board, play_time, strikes)
-        pygame.display.update()
+        if not finished:
+            redraw_window(win, board, play_time, strikes)
+            pygame.display.update()
+        else:
+
+            redraw_window(win, board, finish_time, strikes)
+            pygame.display.update()
 
     pygame.quit()
 
