@@ -40,11 +40,11 @@ def valid(boa, position, number):
 
     # check 3x3 box
     # have each box represented by (x, y) position
-    x = position[0] // 3
-    y = position[1] // 3
+    x = position[1] // 3
+    y = position[0] // 3
     for i in range(3):
         for j in range(3):
-            if boa[3 * x + i][3 * y + j] == number and (i, j) != position:
+            if boa[(3 * y) + i][(3 * x) + j] == number and ((3 * y) + i, (3 * x) + j) != position:
                 return False
 
     return True

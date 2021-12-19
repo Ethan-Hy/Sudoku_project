@@ -30,8 +30,8 @@ class Button:
 
 
 # load button image and create instance
-button_img = pygame.image.load("button.png")
-button = Button(WIDTH/2 - 50, WIDTH + 30 , button_img, 0.5)
+button_img = pygame.image.load("button2.png")
+button = Button(WIDTH/2 - 90, WIDTH + 30, button_img, 0.7)
 
 class Box:
     rows = 9
@@ -123,6 +123,7 @@ class Grid:
 
             # check if the entry is currently valid and the correct number for end solution
             if valid(self.model, (row, col), val) and solve(self.model):
+            #if valid(self.model, (row, col), val):
                 return True
             else:
                 self.boxes[row][col].set(0)
