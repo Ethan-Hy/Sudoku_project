@@ -1,9 +1,11 @@
 import pygame
 from solver import valid, solve
 import time
+pygame.init()
 
 
 FONT_SIZE = 45
+FONT = "arial"
 
 class Box:
     rows = 9
@@ -26,7 +28,7 @@ class Box:
 
     # draw the boxes - highlight when selected and show numbers
     def draw(self, win):
-        font = pygame.font.SysFont("Arial", FONT_SIZE)
+        font = pygame.font.SysFont(FONT, FONT_SIZE)
 
         # space for each box on a grid
         space = self.width / 9
@@ -155,11 +157,11 @@ def redraw_window(win, board, time, strikes):
     # white background
     win.fill((255, 255, 255))
     # Draw time
-    fnt = pygame.font.SysFont("comicsans", FONT_SIZE)
-    text = fnt.render("Time: " + format_time(time), 1, (0, 0, 0))
+    font = pygame.font.SysFont(FONT, FONT_SIZE)
+    text = font.render("Time: " + format_time(time), 1, (0, 0, 0))
     win.blit(text, (540 - 160, 560))
     # Draw number of strikes
-    text = fnt.render("Strikes: " + str(strikes), 1, (255, 0, 0))
+    text = font.render("Strikes: " + str(strikes), 1, (255, 0, 0))
     win.blit(text, (20, 560))
     # Draw grid and board
     board.draw(win)
@@ -177,13 +179,19 @@ def format_time(secs):
 def main():
     win = pygame.display.set_mode((540, 600))
     pygame.display.set_caption("Sudoku - Ethan Hy")
-
+    board = Grid(9, 9, 540, 540)
     run = True
+    start = time.time()
+    strikes = 0
+
     while run:
+        play_time = round(time.time() - start)
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
-        win.fill((255, 255, 255))
+
+        redraw_window(win, board, play_time, strikes)
         pygame.display.update()
 
     pygame.quit()
