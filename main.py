@@ -55,7 +55,7 @@ class Box:
     # draw the boxes - highlight when selected and show numbers
     def draw(self, win):
         font = pygame.font.SysFont(FONT, FONT_SIZE)
-        font_temp = pygame.font.SysFont(FONT, round(FONT_SIZE * 0.7))
+        # font_temp = pygame.font.SysFont(FONT, round(FONT_SIZE * 0.7))
         # space for each box on a grid
         space = self.width / 9
         # starting point of box on the grid
@@ -65,12 +65,14 @@ class Box:
         # highlight box when selected
         if self.selected:
             pygame.draw.rect(win, (255, 0, 0), (x, y, space, space), 3)
+            pygame.draw.rect(win, (173, 216, 230), ((x // (3 * space)) * 3 * space, (y // (3 * space)) * 3 * space, 3 * space, 3 * space))
+
 
         # change values
         # temporary value in top left corner when value hasn't been submitted yet
         if self.temp != 0 and self.value == 0:
-            text = font_temp.render(str(self.temp), 1, (128, 128, 128))
-            win.blit(text, (x + 5, y + 3))
+            text = font.render(str(self.temp), 1, (128, 0, 0))
+            win.blit(text, (x + (space / 2 - text.get_width() / 2), y + (space / 2 - text.get_height() / 2)))
         # value submitted
         elif self.value != 0:
             text = font.render(str(self.value), 1, (0, 0, 0))
@@ -79,15 +81,15 @@ class Box:
 
 class Grid:
     board = [
-        [7, 8, 0, 4, 0, 0, 1, 2, 0],
-        [6, 0, 0, 0, 7, 5, 0, 0, 9],
-        [0, 0, 0, 6, 0, 1, 0, 7, 8],
-        [0, 0, 7, 0, 4, 0, 2, 6, 0],
-        [0, 0, 1, 0, 5, 0, 9, 3, 0],
-        [9, 0, 4, 0, 6, 0, 0, 0, 5],
-        [0, 7, 0, 3, 0, 0, 0, 1, 2],
-        [1, 2, 0, 0, 0, 7, 4, 0, 0],
-        [0, 4, 9, 2, 0, 6, 0, 0, 7]
+        [0, 0, 0, 0, 4, 0, 0, 0, 0],
+        [0, 0, 3, 9, 8, 0, 2, 0, 0],
+        [0, 2, 0, 0, 0, 0, 0, 0, 7],
+        [0, 0, 0, 0, 0, 4, 9, 0, 0],
+        [0, 0, 1, 0, 0, 7, 0, 0, 0],
+        [8, 0, 0, 1, 9, 0, 0, 0, 6],
+        [6, 0, 0, 0, 0, 0, 0, 5, 0],
+        [0, 0, 0, 0, 0, 1, 0, 0, 0],
+        [0, 0, 8, 3, 2, 0, 7, 0, 0]
     ]
 
     def __init__(self, rows, cols, width, height):
@@ -123,7 +125,6 @@ class Grid:
 
             # check if the entry is currently valid and the correct number for end solution
             if valid(self.model, (row, col), val) and solve(self.model):
-            #if valid(self.model, (row, col), val):
                 return True
             else:
                 self.boxes[row][col].set(0)
@@ -180,6 +181,8 @@ class Grid:
 
 # solve the sudoku automatically
 def auto_solve(boa, win, board, play_time, strikes):
+    # clear events so program does not get disturbed during auto_solve
+    pygame.event.clear()
     find = find_next(boa.model)
 
     if not find:
@@ -188,13 +191,13 @@ def auto_solve(boa, win, board, play_time, strikes):
         boa.select(find[0], find[1])
         x, y = find
         for i in range(1, len(boa.model) + 1):
-
+            print(i)
             if valid(boa.model, (x, y), i):
                 boa.boxes[x][y].set(i)
                 boa.update_model()
                 redraw_window(win, board, play_time, strikes)
                 pygame.display.update()
-                pygame.time.wait(10)
+                pygame.time.delay(10)
                 if auto_solve(boa, win, board, play_time, strikes):
                     return True
                 # if it cannot solve backtrack - recursion
@@ -205,7 +208,7 @@ def auto_solve(boa, win, board, play_time, strikes):
                 boa.update_model()
                 redraw_window(win, board, play_time, strikes)
                 pygame.display.update()
-                pygame.time.wait(10)
+                pygame.time.delay(10)
         return False
 
 
@@ -271,6 +274,7 @@ def main():
                     key = None
                 if button.click(pos):
                     board.update_model()
+                    pygame.event.pump()
                     print("yay")
                     auto_solve(board, win, board, play_time, strikes)
                     finished = True
