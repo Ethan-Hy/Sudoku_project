@@ -31,7 +31,7 @@ class Button:
 
 # load button image and create instance
 button_img = pygame.image.load("button2.png")
-button = Button(WIDTH/2 - 90, WIDTH + 20, button_img, 0.7)
+button_magic = Button(WIDTH/2 - 90, WIDTH + 20, button_img, 0.7)
 
 class Box:
     rows = 9
@@ -65,7 +65,7 @@ class Box:
         # highlight box when selected
         if self.selected:
             pygame.draw.rect(win, (255, 0, 0), (x, y, space, space), 3)
-            pygame.draw.rect(win, (173, 216, 230), ((x // (3 * space)) * 3 * space, (y // (3 * space)) * 3 * space, 3 * space, 3 * space))
+            # pygame.draw.rect(win, (173, 216, 230), ((x // (3 * space)) * 3 * space, (y // (3 * space)) * 3 * space, 3 * space, 3 * space))
 
 
         # change values
@@ -80,16 +80,28 @@ class Box:
 
 
 class Grid:
+    # board = [
+    #     [0, 0, 0, 0, 4, 0, 0, 0, 0],
+    #     [0, 0, 3, 9, 8, 0, 2, 0, 0],
+    #     [0, 2, 0, 0, 0, 0, 0, 0, 7],
+    #     [0, 0, 0, 0, 0, 4, 9, 0, 0],
+    #     [0, 0, 1, 0, 0, 7, 0, 0, 0],
+    #     [8, 0, 0, 1, 9, 0, 0, 0, 6],
+    #     [6, 0, 0, 0, 0, 0, 0, 5, 0],
+    #     [0, 0, 0, 0, 0, 1, 0, 0, 0],
+    #     [0, 0, 8, 3, 2, 0, 7, 0, 0]
+    # ]
+
     board = [
-        [0, 0, 0, 0, 4, 0, 0, 0, 0],
-        [0, 0, 3, 9, 8, 0, 2, 0, 0],
-        [0, 2, 0, 0, 0, 0, 0, 0, 7],
-        [0, 0, 0, 0, 0, 4, 9, 0, 0],
-        [0, 0, 1, 0, 0, 7, 0, 0, 0],
-        [8, 0, 0, 1, 9, 0, 0, 0, 6],
-        [6, 0, 0, 0, 0, 0, 0, 5, 0],
-        [0, 0, 0, 0, 0, 1, 0, 0, 0],
-        [0, 0, 8, 3, 2, 0, 7, 0, 0]
+        [6, 8, 0, 4, 7, 0, 0, 0, 0],
+        [7, 3, 4, 0, 6, 2, 5, 0, 0],
+        [2, 0, 0, 5, 0, 8, 7, 0, 4],
+        [0, 0, 0, 2, 5, 0, 0, 0, 0],
+        [0, 0, 0, 0, 8, 0, 0, 1, 0],
+        [5, 6, 0, 9, 1, 3, 0, 0, 7],
+        [0, 0, 1, 7, 2, 6, 3, 0, 0],
+        [9, 2, 0, 0, 4, 0, 8, 0, 1],
+        [0, 7, 0, 0, 0, 1, 0, 5, 6]
     ]
 
     def __init__(self, rows, cols, width, height):
@@ -139,8 +151,17 @@ class Grid:
 
     # draw the Grid with numbers in each box
     def draw(self, win):
-        # Draw Grid Lines
         space = self.width / 9
+
+        # highlight grid when a box is selected
+        if self.selected:
+            row, col = self.selected
+            pygame.draw.rect(win, (173, 216, 230),
+                             ((col // 3) * 3 * space, (row // 3) * 3 * space, 3 * space, 3 * space))
+            pygame.draw.rect(win, (173, 216, 230), (col * space, 0, space, 9 * space))
+            pygame.draw.rect(win, (173, 216, 230), (0, row * space, 9 * space, space))
+
+        # Draw Grid Lines
         for i in range(self.rows + 1):
             if i % 3 == 0 and i != 0:
                 line_width = 4
@@ -180,7 +201,7 @@ class Grid:
 
 
 # solve the sudoku automatically
-def auto_solve(boa, win, board, play_time, strikes):
+def auto_solve(boa, win, board, play_time, lives):
     # clear events so program does not get disturbed during auto_solve
     pygame.event.clear()
     find = find_next(boa.model)
@@ -195,37 +216,37 @@ def auto_solve(boa, win, board, play_time, strikes):
             if valid(boa.model, (x, y), i):
                 boa.boxes[x][y].set(i)
                 boa.update_model()
-                redraw_window(win, board, play_time, strikes)
+                redraw_window(win, board, play_time, lives)
                 pygame.display.update()
                 pygame.time.delay(10)
-                if auto_solve(boa, win, board, play_time, strikes):
+                if auto_solve(boa, win, board, play_time, lives):
                     return True
                 # if it cannot solve backtrack - recursion
                 boa.select(x, y)
-                redraw_window(win, board, play_time, strikes)
+                redraw_window(win, board, play_time, lives)
                 pygame.display.update()
                 boa.boxes[x][y].set(0)
                 boa.update_model()
-                redraw_window(win, board, play_time, strikes)
+                redraw_window(win, board, play_time, lives)
                 pygame.display.update()
                 pygame.time.delay(10)
         return False
 
 
-def redraw_window(win, board, time, strikes):
+def redraw_window(win, board, time, lives):
     # white background
     win.fill((255, 255, 255))
     # Draw time
     font = pygame.font.SysFont(FONT, round(FONT_SIZE * 0.8))
     text = font.render("Time: " + format_time(time), 1, (0, 0, 0))
     win.blit(text, (WIDTH - 240, WIDTH + 30))
-    # Draw number of strikes
-    text = font.render("Strikes: " + str(strikes), 1, (255, 0, 0))
+    # Draw number of lives
+    text = font.render("Lives: " + str(lives), 1, (255, 0, 0))
     win.blit(text, (20, WIDTH + 30))
     # Draw grid and board
     board.draw(win)
     # Draw solve button
-    button.draw(win)
+    button_magic.draw(win)
 
 
 def format_time(secs):
@@ -257,9 +278,11 @@ def main():
     board = Grid(9, 9, WIDTH, WIDTH)
     run = True
     start = time.time()
-    strikes = 0
+    lives = 3
     key = None
     finished = False
+    game_over = False
+    auto_solved = False
 
     while run:
         play_time = round(time.time() - start)
@@ -267,66 +290,97 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                pos = pygame.mouse.get_pos()
-                if board.click(pos):
-                    board.select(board.click(pos)[1], board.click(pos)[0])
-                    key = None
-                if button.click(pos):
-                    board.update_model()
-                    pygame.event.pump()
-                    print("yay")
-                    auto_solve(board, win, board, play_time, strikes)
-                    finished = True
-                    finish_time = play_time
 
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_0:
-                    key = 0
-                if event.key == pygame.K_1:
-                    key = 1
-                if event.key == pygame.K_2:
-                    key = 2
-                if event.key == pygame.K_3:
-                    key = 3
-                if event.key == pygame.K_4:
-                    key = 4
-                if event.key == pygame.K_5:
-                    key = 5
-                if event.key == pygame.K_6:
-                    key = 6
-                if event.key == pygame.K_7:
-                    key = 7
-                if event.key == pygame.K_8:
-                    key = 8
-                if event.key == pygame.K_9:
-                    key = 9
-                if event.key == pygame.K_DELETE:
-                    board.delete()
-                    key = None
-                if event.key == pygame.K_RETURN:
-                    i, j = board.selected
-                    if board.boxes[i][j].temp != 0:
-                        if board.submit(board.boxes[i][j].temp):
-                            print("Correct!")
-                        else:
-                            print("Incorrect!")
-                            strikes += 1
+                if event.key == pygame.K_r:
+                    main()
+
+            if not finished:
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    pos = pygame.mouse.get_pos()
+                    if board.click(pos):
+                        board.select(board.click(pos)[1], board.click(pos)[0])
                         key = None
-                        if board.completed():
-                            print("Sudoku completed!")
-                            finished = True
-                            finish_time = play_time
+                    if button_magic.click(pos):
+                        board.update_model()
+                        pygame.event.pump()
+                        print("yay")
+                        auto_solve(board, win, board, play_time, lives)
+                        finished = True
+                        finish_time = play_time
+                        auto_solved = True
+
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_0:
+                        key = 0
+                    if event.key == pygame.K_1:
+                        key = 1
+                    if event.key == pygame.K_2:
+                        key = 2
+                    if event.key == pygame.K_3:
+                        key = 3
+                    if event.key == pygame.K_4:
+                        key = 4
+                    if event.key == pygame.K_5:
+                        key = 5
+                    if event.key == pygame.K_6:
+                        key = 6
+                    if event.key == pygame.K_7:
+                        key = 7
+                    if event.key == pygame.K_8:
+                        key = 8
+                    if event.key == pygame.K_9:
+                        key = 9
+                    if event.key == pygame.K_DELETE:
+                        board.delete()
+                        key = None
+                    if event.key == pygame.K_RETURN:
+                        i, j = board.selected
+                        if board.boxes[i][j].temp != 0:
+                            if board.submit(board.boxes[i][j].temp):
+                                print("Correct!")
+                            else:
+                                print("Incorrect!")
+                                lives -= 1
+                                if lives < 0:
+                                    finished = True
+                                    finish_time = play_time
+                                    game_over = True
+                            key = None
+                            if board.completed():
+                                print("Sudoku completed!")
+                                finished = True
+                                finish_time = play_time
 
         if board.selected and key != None:
             board.note(key)
 
         if not finished:
-            redraw_window(win, board, play_time, strikes)
+            redraw_window(win, board, play_time, lives)
             pygame.display.update()
-        else:
-
-            redraw_window(win, board, finish_time, strikes)
+        elif finished and game_over:
+            redraw_window(win, board, finish_time, lives)
+            font = pygame.font.SysFont(FONT, FONT_SIZE)
+            text = font.render("Game Over", True, (0, 0, 0))
+            text_rect = text.get_rect()
+            text_x = win.get_width() / 2 - text_rect.width / 2
+            text_y = win.get_height() / 2 - text_rect.height / 2
+            pygame.draw.rect(win, (255, 0, 0), (text_x, text_y, text_rect.width, text_rect.height))
+            win.blit(text, [text_x, text_y])
+            pygame.display.update()
+        elif finished:
+            redraw_window(win, board, finish_time, lives)
+            font = pygame.font.SysFont(FONT, FONT_SIZE)
+            # text = font.render("Sudoku Completed! Your time was: " + format_time(finish_time), True, (0, 0, 0))
+            if auto_solved:
+                text = font.render("Magic!", True, (0, 0, 0))
+            else:
+                text = font.render("Sudoku Completed!", True, (0, 0, 0))
+            text_rect = text.get_rect()
+            text_x = win.get_width() / 2 - text_rect.width / 2
+            text_y = win.get_height() / 2 - text_rect.height / 2
+            pygame.draw.rect(win, (0, 255, 0), (text_x, text_y, text_rect.width, text_rect.height))
+            win.blit(text, [text_x, text_y])
             pygame.display.update()
 
     pygame.quit()
