@@ -233,8 +233,8 @@ def auto_solve(boa, win, board, play_time, lives):
 
 
 def redraw_window(win, board, time, lives):
-    # white background
-    win.fill((255, 255, 255))
+    # background colour
+    win.fill((255, 254, 234))
     # Draw time
     font = pygame.font.SysFont(FONT, round(FONT_SIZE * 0.8))
     font_small = pygame.font.SysFont(FONT, round(FONT_SIZE * 0.4))
