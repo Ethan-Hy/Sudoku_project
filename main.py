@@ -31,7 +31,7 @@ class Button:
 
 # load button image and create instance
 button_img = pygame.image.load("button2.png")
-button_magic = Button(WIDTH/2 - 90, WIDTH + 20, button_img, 0.7)
+button_magic = Button(WIDTH/2 - 100, WIDTH + 20, button_img, 0.7)
 
 class Box:
     rows = 9
