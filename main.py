@@ -64,8 +64,8 @@ class Box:
 
         # highlight box when selected
         if self.selected:
-            pygame.draw.rect(win, (255, 0, 0), (x, y, space, space), 3)
-            # pygame.draw.rect(win, (173, 216, 230), ((x // (3 * space)) * 3 * space, (y // (3 * space)) * 3 * space, 3 * space, 3 * space))
+            pygame.draw.rect(win, (200, 0, 0), (x, y, space, space), 6)
+
 
 
         # change values
@@ -212,7 +212,6 @@ def auto_solve(boa, win, board, play_time, lives):
         boa.select(find[0], find[1])
         x, y = find
         for i in range(1, len(boa.model) + 1):
-            print(i)
             if valid(boa.model, (x, y), i):
                 boa.boxes[x][y].set(i)
                 boa.update_model()
@@ -238,15 +237,19 @@ def redraw_window(win, board, time, lives):
     win.fill((255, 255, 255))
     # Draw time
     font = pygame.font.SysFont(FONT, round(FONT_SIZE * 0.8))
+    font_small = pygame.font.SysFont(FONT, round(FONT_SIZE * 0.4))
     text = font.render("Time: " + format_time(time), 1, (0, 0, 0))
     win.blit(text, (WIDTH - 240, WIDTH + 30))
     # Draw number of lives
-    text = font.render("Lives: " + str(lives), 1, (255, 0, 0))
+    text = font.render("Lives: " + str(lives), 1, (200, 0, 0))
     win.blit(text, (20, WIDTH + 30))
     # Draw grid and board
     board.draw(win)
     # Draw solve button
     button_magic.draw(win)
+    # Draw on restart instruction
+    text = font_small.render("Press R to restart", 1, (0, 0, 0))
+    win.blit(text, (20, HEIGHT - 30))
 
 
 def format_time(secs):
@@ -304,7 +307,6 @@ def main():
                     if button_magic.click(pos):
                         board.update_model()
                         pygame.event.pump()
-                        print("yay")
                         auto_solve(board, win, board, play_time, lives)
                         finished = True
                         finish_time = play_time
