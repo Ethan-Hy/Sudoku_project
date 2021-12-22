@@ -8,6 +8,45 @@ FONT_SIZE = 45
 FONT = "calibri"
 WIDTH = 540
 HEIGHT = 640
+DIFFICULTIES = ["Easy", "Normal", "Hard"]
+# boards taken from https://sudoku.com/
+BOARD_EASY = [
+    [6, 8, 0, 4, 7, 0, 0, 0, 0],
+    [7, 3, 4, 0, 6, 2, 5, 0, 0],
+    [2, 0, 0, 5, 0, 8, 7, 0, 4],
+    [0, 0, 0, 2, 5, 0, 0, 0, 0],
+    [0, 0, 0, 0, 8, 0, 0, 1, 0],
+    [5, 6, 0, 9, 1, 3, 0, 0, 7],
+    [0, 0, 1, 7, 2, 6, 3, 0, 0],
+    [9, 2, 0, 0, 4, 0, 8, 0, 1],
+    [0, 7, 0, 0, 0, 1, 0, 5, 6]
+]
+
+BOARD_MEDIUM = [
+    [0, 0, 1, 0, 0, 0, 0, 4, 0],
+    [6, 0, 9, 0, 0, 0, 0, 7, 0],
+    [0, 0, 7, 4, 5, 0, 0, 0, 0],
+    [7, 5, 0, 8, 0, 4, 1, 0, 0],
+    [0, 1, 0, 0, 0, 0, 7, 0, 0],
+    [4, 0, 6, 5, 0, 7, 0, 2, 0],
+    [9, 6, 0, 1, 0, 0, 3, 0, 7],
+    [0, 0, 0, 0, 7, 0, 0, 0, 2],
+    [0, 0, 4, 0, 9, 0, 5, 0, 0]
+]
+
+BOARD_HARD = [
+    [0, 3, 0, 0, 7, 0, 0, 0, 0],
+    [0, 2, 0, 0, 4, 0, 0, 6, 0],
+    [0, 0, 0, 8, 3, 0, 5, 2, 0],
+    [0, 0, 4, 0, 0, 8, 6, 0, 0],
+    [0, 0, 0, 0, 0, 0, 7, 3, 8],
+    [1, 8, 0, 7, 0, 0, 0, 4, 0],
+    [0, 9, 0, 0, 5, 7, 0, 0, 0],
+    [0, 0, 8, 0, 9, 0, 4, 0, 0],
+    [0, 0, 3, 2, 0, 0, 0, 1, 0]
+]
+
+BOARDS = [BOARD_EASY, BOARD_MEDIUM, BOARD_HARD]
 
 
 class Button:
@@ -30,8 +69,13 @@ class Button:
 
 
 # load button image and create instance
-button_img = pygame.image.load("button2.png")
-button_magic = Button(WIDTH/2 - 100, WIDTH + 20, button_img, 0.7)
+button_magic_img = pygame.image.load("button2.png")
+button_magic = Button(WIDTH/2 - 100, WIDTH + 20, button_magic_img, 0.7)
+button_arrow_r_img = pygame.image.load("arrow.png")
+button_arrow_l_img = pygame.transform.flip(button_arrow_r_img, True, False)
+button_arrow_r = Button(WIDTH - 82, WIDTH + 72, button_arrow_r_img, 0.2)
+button_arrow_l = Button(WIDTH - 100, WIDTH + 72, button_arrow_l_img, 0.2)
+
 
 class Box:
     rows = 9
@@ -80,31 +124,9 @@ class Box:
 
 
 class Grid:
-    # board = [
-    #     [0, 0, 0, 0, 4, 0, 0, 0, 0],
-    #     [0, 0, 3, 9, 8, 0, 2, 0, 0],
-    #     [0, 2, 0, 0, 0, 0, 0, 0, 7],
-    #     [0, 0, 0, 0, 0, 4, 9, 0, 0],
-    #     [0, 0, 1, 0, 0, 7, 0, 0, 0],
-    #     [8, 0, 0, 1, 9, 0, 0, 0, 6],
-    #     [6, 0, 0, 0, 0, 0, 0, 5, 0],
-    #     [0, 0, 0, 0, 0, 1, 0, 0, 0],
-    #     [0, 0, 8, 3, 2, 0, 7, 0, 0]
-    # ]
 
-    board = [
-        [6, 8, 0, 4, 7, 0, 0, 0, 0],
-        [7, 3, 4, 0, 6, 2, 5, 0, 0],
-        [2, 0, 0, 5, 0, 8, 7, 0, 4],
-        [0, 0, 0, 2, 5, 0, 0, 0, 0],
-        [0, 0, 0, 0, 8, 0, 0, 1, 0],
-        [5, 6, 0, 9, 1, 3, 0, 0, 7],
-        [0, 0, 1, 7, 2, 6, 3, 0, 0],
-        [9, 2, 0, 0, 4, 0, 8, 0, 1],
-        [0, 7, 0, 0, 0, 1, 0, 5, 6]
-    ]
-
-    def __init__(self, rows, cols, width, height):
+    def __init__(self, board, rows, cols, width, height):
+        self.board = board
         self.rows = rows
         self.cols = cols
         self.width = width
@@ -201,7 +223,7 @@ class Grid:
 
 
 # solve the sudoku automatically
-def auto_solve(boa, win, board, play_time, lives):
+def auto_solve(boa, win, board, play_time, lives, DIFFICULTY):
     # clear events so program does not get disturbed during auto_solve
     pygame.event.clear()
     find = find_next(boa.model)
@@ -215,24 +237,24 @@ def auto_solve(boa, win, board, play_time, lives):
             if valid(boa.model, (x, y), i):
                 boa.boxes[x][y].set(i)
                 boa.update_model()
-                redraw_window(win, board, play_time, lives)
+                redraw_window(win, board, play_time, lives, DIFFICULTY)
                 pygame.display.update()
                 pygame.time.delay(10)
-                if auto_solve(boa, win, board, play_time, lives):
+                if auto_solve(boa, win, board, play_time, lives, DIFFICULTY):
                     return True
                 # if it cannot solve backtrack - recursion
                 boa.select(x, y)
-                redraw_window(win, board, play_time, lives)
+                redraw_window(win, board, play_time, lives, DIFFICULTY)
                 pygame.display.update()
                 boa.boxes[x][y].set(0)
                 boa.update_model()
-                redraw_window(win, board, play_time, lives)
+                redraw_window(win, board, play_time, lives, DIFFICULTY)
                 pygame.display.update()
                 pygame.time.delay(10)
         return False
 
 
-def redraw_window(win, board, time, lives):
+def redraw_window(win, board, time, lives, difficulty):
     # background colour
     win.fill((255, 254, 234))
     # Draw time
@@ -245,11 +267,16 @@ def redraw_window(win, board, time, lives):
     win.blit(text, (20, WIDTH + 30))
     # Draw grid and board
     board.draw(win)
-    # Draw solve button
+    # Draw buttons
     button_magic.draw(win)
+    button_arrow_r.draw(win)
+    button_arrow_l.draw(win)
     # Draw on restart instruction
     text = font_small.render("Press R to restart", 1, (0, 0, 0))
     win.blit(text, (20, HEIGHT - 30))
+    # Draw difficulty
+    text = font_small.render("Difficulty: " + DIFFICULTIES[difficulty], 1, (0, 0, 0))
+    win.blit(text, (WIDTH - 240, WIDTH + 70))
 
 
 def format_time(secs):
@@ -275,10 +302,14 @@ def format_time(secs):
     return mat
 
 
+DIFFICULTY = 0
+
+
 def main():
+    global DIFFICULTY
     win = pygame.display.set_mode((WIDTH, HEIGHT))
     pygame.display.set_caption("Sudoku - Ethan Hy")
-    board = Grid(9, 9, WIDTH, WIDTH)
+    board = Grid(BOARDS[DIFFICULTY], 9, 9, WIDTH, WIDTH)
     run = True
     start = time.time()
     lives = 3
@@ -307,10 +338,18 @@ def main():
                     if button_magic.click(pos):
                         board.update_model()
                         pygame.event.pump()
-                        auto_solve(board, win, board, play_time, lives)
+                        auto_solve(board, win, board, play_time, lives, DIFFICULTY)
                         finished = True
                         finish_time = play_time
                         auto_solved = True
+                    if button_arrow_r.click(pos):
+                        if DIFFICULTY != len(DIFFICULTIES) - 1:
+                            DIFFICULTY += 1
+                            main()
+                    if button_arrow_l.click(pos):
+                        if DIFFICULTY != 0:
+                            DIFFICULTY -= 1
+                            main()
 
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_0:
@@ -358,10 +397,10 @@ def main():
             board.note(key)
 
         if not finished:
-            redraw_window(win, board, play_time, lives)
+            redraw_window(win, board, play_time, lives, DIFFICULTY)
             pygame.display.update()
         elif finished and game_over:
-            redraw_window(win, board, finish_time, lives)
+            redraw_window(win, board, finish_time, lives, DIFFICULTY)
             font = pygame.font.SysFont(FONT, FONT_SIZE)
             text = font.render("Game Over", True, (0, 0, 0))
             text_rect = text.get_rect()
@@ -371,7 +410,7 @@ def main():
             win.blit(text, [text_x, text_y])
             pygame.display.update()
         elif finished:
-            redraw_window(win, board, finish_time, lives)
+            redraw_window(win, board, finish_time, lives, DIFFICULTY)
             font = pygame.font.SysFont(FONT, FONT_SIZE)
             # text = font.render("Sudoku Completed! Your time was: " + format_time(finish_time), True, (0, 0, 0))
             if auto_solved:
