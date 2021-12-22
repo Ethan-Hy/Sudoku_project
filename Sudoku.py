@@ -184,7 +184,7 @@ def auto_solve(boa, win, board, play_time, lives, difficulty):
                 boa.update_model()
                 redraw_window(win, board, play_time, lives, difficulty)
                 pygame.display.update()
-                #pygame.time.delay(AUTO_DELAY)
+                # pygame.time.delay(AUTO_DELAY)
                 if auto_solve(boa, win, board, play_time, lives, difficulty):
                     return True
                 # if it cannot solve backtrack - recursion
@@ -195,7 +195,7 @@ def auto_solve(boa, win, board, play_time, lives, difficulty):
                 boa.update_model()
                 redraw_window(win, board, play_time, lives, difficulty)
                 pygame.display.update()
-                #pygame.time.delay(AUTO_DELAY)
+                # pygame.time.delay(AUTO_DELAY)
         return False
 
 
