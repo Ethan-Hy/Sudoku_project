@@ -1,7 +1,6 @@
 import pygame
 from solver import valid, solve, find_next
-from button import Button
-from load import load_boards
+from functions import load_boards, Button, format_time
 import time
 pygame.init()
 
@@ -56,8 +55,6 @@ class Box:
         # highlight box when selected
         if self.selected:
             pygame.draw.rect(win, (200, 0, 0), (x, y, space, space), 6)
-
-
 
         # change values
         # temporary value in top left corner when value hasn't been submitted yet
@@ -224,29 +221,6 @@ def redraw_window(win, board, time, lives, difficulty):
     # Draw difficulty
     text = font_small.render("Difficulty: " + DIFFICULTIES[difficulty], 1, (0, 0, 0))
     win.blit(text, (WIDTH - 240, WIDTH + 70))
-
-
-def format_time(secs):
-    sec = secs % 60
-    minute = secs // 60
-    hour = minute // 60
-    if sec < 10:
-        sec = "0" + str(sec)
-    else:
-        sec = str(sec)
-    if minute < 10:
-        minute = "0" + str(minute)
-    else:
-        minute = str(minute)
-    if hour < 10:
-        hour = "0" + str(hour)
-    else:
-        hour = str(hour)
-    mat = " " + hour + ":" + minute + ":" + sec
-    return mat
-
-
-
 
 
 def main():
