@@ -239,7 +239,7 @@ def auto_solve(boa, win, board, play_time, lives, DIFFICULTY):
                 boa.update_model()
                 redraw_window(win, board, play_time, lives, DIFFICULTY)
                 pygame.display.update()
-                pygame.time.delay(10)
+                pygame.time.delay(5)
                 if auto_solve(boa, win, board, play_time, lives, DIFFICULTY):
                     return True
                 # if it cannot solve backtrack - recursion
@@ -250,7 +250,7 @@ def auto_solve(boa, win, board, play_time, lives, DIFFICULTY):
                 boa.update_model()
                 redraw_window(win, board, play_time, lives, DIFFICULTY)
                 pygame.display.update()
-                pygame.time.delay(10)
+                pygame.time.delay(5)
         return False
 
 
@@ -329,6 +329,18 @@ def main():
                 if event.key == pygame.K_r:
                     main()
 
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                pos = pygame.mouse.get_pos()
+
+                if button_arrow_r.click(pos):
+                    if DIFFICULTY != len(DIFFICULTIES) - 1:
+                        DIFFICULTY += 1
+                        main()
+                if button_arrow_l.click(pos):
+                    if DIFFICULTY != 0:
+                        DIFFICULTY -= 1
+                        main()
+
             if not finished:
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     pos = pygame.mouse.get_pos()
@@ -342,14 +354,6 @@ def main():
                         finished = True
                         finish_time = play_time
                         auto_solved = True
-                    if button_arrow_r.click(pos):
-                        if DIFFICULTY != len(DIFFICULTIES) - 1:
-                            DIFFICULTY += 1
-                            main()
-                    if button_arrow_l.click(pos):
-                        if DIFFICULTY != 0:
-                            DIFFICULTY -= 1
-                            main()
 
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_0:
