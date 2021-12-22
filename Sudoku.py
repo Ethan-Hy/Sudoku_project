@@ -10,7 +10,7 @@ WIDTH = 540
 HEIGHT = 640
 DIFFICULTIES = ["Easy", "Normal", "Hard"]
 DIFFICULTY = 0
-AUTO_DELAY = 1
+AUTO_DELAY = 5
 
 # boards taken from https://sudoku.com/
 BOARDS = load_boards()
