@@ -1,8 +1,9 @@
 import pygame
 from solver import valid, solve, find_next
+from button import Button
+from load import load_boards
 import time
 pygame.init()
-
 
 FONT_SIZE = 45
 FONT = "calibri"
@@ -12,63 +13,7 @@ DIFFICULTIES = ["Easy", "Normal", "Hard"]
 DIFFICULTY = 0
 
 # boards taken from https://sudoku.com/
-BOARD_EASY = [
-    [6, 8, 0, 4, 7, 0, 0, 0, 0],
-    [7, 3, 4, 0, 6, 2, 5, 0, 0],
-    [2, 0, 0, 5, 0, 8, 7, 0, 4],
-    [0, 0, 0, 2, 5, 0, 0, 0, 0],
-    [0, 0, 0, 0, 8, 0, 0, 1, 0],
-    [5, 6, 0, 9, 1, 3, 0, 0, 7],
-    [0, 0, 1, 7, 2, 6, 3, 0, 0],
-    [9, 2, 0, 0, 4, 0, 8, 0, 1],
-    [0, 7, 0, 0, 0, 1, 0, 5, 6]
-]
-
-BOARD_MEDIUM = [
-    [0, 0, 1, 0, 0, 0, 0, 4, 0],
-    [6, 0, 9, 0, 0, 0, 0, 7, 0],
-    [0, 0, 7, 4, 5, 0, 0, 0, 0],
-    [7, 5, 0, 8, 0, 4, 1, 0, 0],
-    [0, 1, 0, 0, 0, 0, 7, 0, 0],
-    [4, 0, 6, 5, 0, 7, 0, 2, 0],
-    [9, 6, 0, 1, 0, 0, 3, 0, 7],
-    [0, 0, 0, 0, 7, 0, 0, 0, 2],
-    [0, 0, 4, 0, 9, 0, 5, 0, 0]
-]
-
-BOARD_HARD = [
-    [0, 3, 0, 0, 7, 0, 0, 0, 0],
-    [0, 2, 0, 0, 4, 0, 0, 6, 0],
-    [0, 0, 0, 8, 3, 0, 5, 2, 0],
-    [0, 0, 4, 0, 0, 8, 6, 0, 0],
-    [0, 0, 0, 0, 0, 0, 7, 3, 8],
-    [1, 8, 0, 7, 0, 0, 0, 4, 0],
-    [0, 9, 0, 0, 5, 7, 0, 0, 0],
-    [0, 0, 8, 0, 9, 0, 4, 0, 0],
-    [0, 0, 3, 2, 0, 0, 0, 1, 0]
-]
-
-BOARDS = [BOARD_EASY, BOARD_MEDIUM, BOARD_HARD]
-
-
-class Button:
-    def __init__(self, x, y, image, scale):
-        width = image.get_width()
-        height = image.get_height()
-        self.image = pygame.transform.scale(image, (int(width * scale), int(height * scale)))
-        self.rect = self.image.get_rect()
-        self.rect.topleft = (x, y)
-
-    def draw(self, win):
-        win.blit(self.image, (self.rect.x, self.rect.y))
-
-    def click(self, pos):
-        if self.rect.collidepoint(pos):
-            if pygame.mouse.get_pressed()[0] == 1:
-                return True
-        else:
-            return False
-
+BOARDS = load_boards()
 
 # load button image and create instance
 button_magic_img = pygame.image.load("button2.png")
@@ -225,7 +170,7 @@ class Grid:
 
 
 # solve the sudoku automatically
-def auto_solve(boa, win, board, play_time, lives, DIFFICULTY):
+def auto_solve(boa, win, board, play_time, lives, difficulty):
     # clear events so program does not get disturbed during auto_solve
     pygame.event.clear()
     find = find_next(boa.model)
@@ -239,18 +184,18 @@ def auto_solve(boa, win, board, play_time, lives, DIFFICULTY):
             if valid(boa.model, (x, y), i):
                 boa.boxes[x][y].set(i)
                 boa.update_model()
-                redraw_window(win, board, play_time, lives, DIFFICULTY)
+                redraw_window(win, board, play_time, lives, difficulty)
                 pygame.display.update()
                 pygame.time.delay(5)
-                if auto_solve(boa, win, board, play_time, lives, DIFFICULTY):
+                if auto_solve(boa, win, board, play_time, lives, difficulty):
                     return True
                 # if it cannot solve backtrack - recursion
                 boa.select(x, y)
-                redraw_window(win, board, play_time, lives, DIFFICULTY)
+                redraw_window(win, board, play_time, lives, difficulty)
                 pygame.display.update()
                 boa.boxes[x][y].set(0)
                 boa.update_model()
-                redraw_window(win, board, play_time, lives, DIFFICULTY)
+                redraw_window(win, board, play_time, lives, difficulty)
                 pygame.display.update()
                 pygame.time.delay(5)
         return False
@@ -285,7 +230,6 @@ def format_time(secs):
     sec = secs % 60
     minute = secs // 60
     hour = minute // 60
-
     if sec < 10:
         sec = "0" + str(sec)
     else:
@@ -298,9 +242,7 @@ def format_time(secs):
         hour = "0" + str(hour)
     else:
         hour = str(hour)
-
     mat = " " + hour + ":" + minute + ":" + sec
-
     return mat
 
 
