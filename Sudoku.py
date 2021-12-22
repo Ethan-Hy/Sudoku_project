@@ -9,6 +9,8 @@ FONT = "calibri"
 WIDTH = 540
 HEIGHT = 640
 DIFFICULTIES = ["Easy", "Normal", "Hard"]
+DIFFICULTY = 0
+
 # boards taken from https://sudoku.com/
 BOARD_EASY = [
     [6, 8, 0, 4, 7, 0, 0, 0, 0],
@@ -302,7 +304,7 @@ def format_time(secs):
     return mat
 
 
-DIFFICULTY = 0
+
 
 
 def main():
