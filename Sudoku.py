@@ -306,7 +306,7 @@ def main():
                             elif not board.submit(board.boxes[i][j].temp) and board.boxes[i][j].value == 0:
                                 print("Incorrect!")
                                 lives -= 1
-                                if lives < 0:
+                                if lives < 1:
                                     finished = True
                                     finish_time = play_time
                                     game_over = True
