@@ -384,7 +384,7 @@ def main():
                         if board.boxes[i][j].temp != 0:
                             if board.submit(board.boxes[i][j].temp):
                                 print("Correct!")
-                            else:
+                            elif not board.submit(board.boxes[i][j].temp) and board.boxes[i][j].value == 0:
                                 print("Incorrect!")
                                 lives -= 1
                                 if lives < 0:
