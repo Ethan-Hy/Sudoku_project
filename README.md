@@ -1,5 +1,5 @@
 # Sudoku Game with Auto-solve - Ethan Hy
-#### Video Demo:  <URL HERE>
+#### Video Demo:  https://youtu.be/1p5CYge4_rk
 #### Description:
 This pygame app is a Sudoku game where you can play Sudoku normally and auto-solve it using the Magic button.
 There is a timer and you have 3 lives, once you go below 0 lives you lose and must restart.
