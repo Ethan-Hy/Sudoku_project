@@ -11,7 +11,7 @@ The functions used to create `Basic_Sudoku.py` are then put into `solver.py` whi
 
 General functions are then put into `functions` which include a file reading function to input boards from a text file, an interactive pygame button, and a time formatting function.
 
-The main app is built in `Sudoku.py`. Two Classes are made, a  `Box` Class which is inherited by the `Grid` Class which are used to construct the Sudoku board. 
+The main app is built in `Sudoku.py`. Two Classes are made, the `Grid` Class maps `Box` objects to the Sudoku board to construct it. 
 The `auto_solve` function is made here using functions from `solver.py` where each number submission is animated to show the user how the back tracking algorithm works. Initially a time delay was introduced (which is currently commented out)
 to show the back tracking algorithm more clearly, however, the current Sudoku puzzles being used can take some time to solve so it has been commented out. Instructions are below to reintroduce this time delay.
 
